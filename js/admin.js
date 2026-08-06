@@ -178,6 +178,22 @@ document.addEventListener("DOMContentLoaded", () => {
     setVal("cfg-trust-3", s.trustBadge3);
   }
 
+  // Handle Logo Upload
+  const logoFileInput = document.getElementById("cfg-logo-file-input");
+  if (logoFileInput) {
+    logoFileInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        try {
+          const webpData = await convertToWebP(file, 400, 0.9); // Logo dimensions usually smaller
+          setVal("cfg-logo-img", webpData);
+        } catch (err) {
+          alert("Error converting logo to WebP.");
+        }
+      }
+    };
+  }
+
   const saveBrandingBtn = document.getElementById("save-branding-btn");
   if (saveBrandingBtn) {
     saveBrandingBtn.onclick = () => {
