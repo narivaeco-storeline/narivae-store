@@ -30,6 +30,7 @@
       border: 2px solid transparent;
       transition: var(--transition-fast);
       background: #F4F1EA;
+      flex-shrink: 0;
     }
 
     .p-thumb-box.active, .p-thumb-box:hover {
@@ -221,6 +222,9 @@
       .p-thumbs-col {
         flex-direction: row;
         overflow-x: auto;
+        padding-bottom: 8px;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
       }
       .reviews-grid {
         grid-template-columns: 1fr;

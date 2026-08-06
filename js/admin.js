@@ -799,6 +799,9 @@ document.addEventListener("DOMContentLoaded", () => {
     publishGithubBtn.onclick = async () => {
       const pat = document.getElementById("github-pat-input").value.trim();
       const statusMsg = document.getElementById("publish-status-msg");
+
+      // ALWAYS read the freshest saved state from localStorage before pushing
+      const latestStore = getStoreData();
       if (!pat || !pat.startsWith("ghp_")) {
         alert("Please enter a valid GitHub Personal Access Token (starts with ghp_).");
         return;
@@ -823,7 +826,7 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < binaryStringData.length; i++) bytesData[i] = binaryStringData.charCodeAt(i);
         let currentTextData = new TextDecoder().decode(bytesData);
 
-        const newJsonStr = JSON.stringify(store, null, 2);
+        const newJsonStr = JSON.stringify(latestStore, null, 2);
         const newTextData = currentTextData.replace(/const DEFAULT_STORE_DATA = \{[\s\S]*?\};\n\n\/\/ Storage helper functions/, `const DEFAULT_STORE_DATA = ${newJsonStr};\n\n// Storage helper functions`);
         
         let utf8BytesData = new TextEncoder().encode(newTextData);
