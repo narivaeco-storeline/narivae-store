@@ -187,11 +187,17 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           if (file.type === "image/svg+xml") {
             const reader = new FileReader();
-            reader.onload = (ev) => setVal("cfg-logo-img", ev.target.result);
+            reader.onload = (ev) => {
+              setVal("cfg-logo-img", ev.target.result);
+              const label = document.querySelector('label[for="cfg-logo-img"]') || logoFileInput.previousElementSibling;
+              if (label) label.innerHTML = "✅ Logo loaded successfully!";
+            };
             reader.readAsDataURL(file);
           } else {
-            const webpData = await convertToWebP(file, 400, 0.9); // Logo dimensions usually smaller
+            const webpData = await convertToWebP(file, 400, 0.9);
             setVal("cfg-logo-img", webpData);
+            const label = document.querySelector('label[for="cfg-logo-img"]') || logoFileInput.previousElementSibling;
+            if (label) label.innerHTML = "✅ Logo loaded successfully!";
           }
         } catch (err) {
           alert("Error converting logo image.");
