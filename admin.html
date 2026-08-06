@@ -406,6 +406,16 @@
           <input type="file" id="import-excel-file" accept=".csv" class="form-control" style="width:auto;" />
         </div>
 
+        <div class="admin-card" style="background:#f4fbf7; border:1px solid #1a6b4a;">
+          <h3 style="color:#1a6b4a;">🚀 Publish Changes to Live Site</h3>
+          <p style="font-size:0.9rem; color:#444; margin-top:6px; margin-bottom:16px;">Make your admin panel changes permanently visible to all visitors. Since GitHub Pages is static, this pushes your latest settings directly to your GitHub repository.</p>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <input type="password" id="github-pat-input" placeholder="Paste GitHub Token (ghp_...)" class="form-control" style="flex:1;" />
+            <button class="btn-primary" id="publish-github-btn" style="background:#1a6b4a; border:none; padding:10px 20px; font-weight:bold;">Push to GitHub</button>
+          </div>
+          <p style="font-size:0.75rem; color:#666; margin-top:10px;" id="publish-status-msg">Your token is only used locally and is never stored on a server.</p>
+        </div>
+
         <div class="admin-card">
           <h3>Export Catalog to JSON</h3>
           <p style="font-size:0.9rem; color:#666; margin-top:6px; margin-bottom:16px;">Download your full store catalog & settings as a JSON file to save as a permanent backup.</p>

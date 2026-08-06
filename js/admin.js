@@ -765,6 +765,75 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  const publishGithubBtn = document.getElementById("publish-github-btn");
+  if (publishGithubBtn) {
+    publishGithubBtn.onclick = async () => {
+      const pat = document.getElementById("github-pat-input").value.trim();
+      const statusMsg = document.getElementById("publish-status-msg");
+      if (!pat || !pat.startsWith("ghp_")) {
+        alert("Please enter a valid GitHub Personal Access Token (starts with ghp_).");
+        return;
+      }
+      
+      const repo = "narivaeco-storeline/narivae-store";
+      publishGithubBtn.disabled = true;
+      publishGithubBtn.textContent = "Publishing...";
+      statusMsg.style.color = "#666";
+      
+      try {
+        statusMsg.textContent = "Fetching current data file...";
+        // 1. Get SHA and Content
+        const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/js/data.js`, {
+          headers: { "Authorization": `token ${pat}`, "Accept": "application/vnd.github.v3+json" }
+        });
+        const getJson = await getRes.json();
+        if (!getRes.ok) throw new Error(getJson.message || "Failed to fetch file.");
+        const sha = getJson.sha;
+
+        statusMsg.textContent = "Updating content...";
+        // Decode base64 to utf-8 safely
+        const binaryString = atob(getJson.content);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+        const currentText = new TextDecoder().decode(bytes);
+
+        // Replace DEFAULT_STORE_DATA
+        const newJsonStr = JSON.stringify(store, null, 2);
+        const newText = currentText.replace(/const DEFAULT_STORE_DATA = \{[\s\S]*?\};\n\n\/\/ Storage helper functions/, `const DEFAULT_STORE_DATA = ${newJsonStr};\n\n// Storage helper functions`);
+        
+        // Encode utf-8 to base64 safely
+        const utf8Bytes = new TextEncoder().encode(newText);
+        let binaryStr = "";
+        for (let i = 0; i < utf8Bytes.length; i++) binaryStr += String.fromCharCode(utf8Bytes[i]);
+        const newBase64 = btoa(binaryStr);
+
+        statusMsg.textContent = "Pushing to GitHub...";
+        const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/js/data.js`, {
+          method: "PUT",
+          headers: { "Authorization": `token ${pat}`, "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: "Update store data from admin panel",
+            content: newBase64,
+            sha: sha
+          })
+        });
+        
+        if (!putRes.ok) throw new Error("Failed to push file to GitHub.");
+        
+        statusMsg.textContent = "✅ Successfully published to live site! Changes will reflect globally in ~1 minute.";
+        statusMsg.style.color = "green";
+        setTimeout(() => { publishGithubBtn.textContent = "Push to GitHub"; publishGithubBtn.disabled = false; }, 3000);
+      } catch (err) {
+        console.error(err);
+        statusMsg.textContent = "❌ Error: " + err.message;
+        statusMsg.style.color = "red";
+        publishGithubBtn.textContent = "Push to GitHub";
+        publishGithubBtn.disabled = false;
+      }
+    };
+  }
+
+
   const importInput = document.getElementById("import-db-file");
   if (importInput) {
     importInput.onchange = (e) => {
