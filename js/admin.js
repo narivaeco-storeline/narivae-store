@@ -185,12 +185,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const file = e.target.files[0];
       if (file) {
         try {
-          const webpData = await convertToWebP(file, 400, 0.9); // Logo dimensions usually smaller
-          setVal("cfg-logo-img", webpData);
+          if (file.type === "image/svg+xml") {
+            const reader = new FileReader();
+            reader.onload = (ev) => setVal("cfg-logo-img", ev.target.result);
+            reader.readAsDataURL(file);
+          } else {
+            const webpData = await convertToWebP(file, 400, 0.9); // Logo dimensions usually smaller
+            setVal("cfg-logo-img", webpData);
+          }
         } catch (err) {
-          alert("Error converting logo to WebP.");
+          alert("Error converting logo image.");
         }
       }
+
     };
   }
 
