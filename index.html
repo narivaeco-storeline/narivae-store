@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NARIVAE | Premium Indian Ethnic Wear, Suit Sets & Anarkalis</title>
+  <meta name="description" content="Discover luxury Indian ethnic wear, handcrafted suit sets, flared Anarkalis, and tunics at NARIVAE. Order directly via WhatsApp.">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Announcement Bar -->
+  <div class="announcement-bar">
+    <span id="announcement-text">✨ FESTIVE SALE IS LIVE! ENJOY FREE SHIPPING ACROSS INDIA + EXTRA 10% OFF ON WHATSAPP ORDERS ✨</span>
+  </div>
+
+  <!-- Main Site Header -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        <!-- Logo -->
+        <a href="index.html" class="brand-logo">
+          <img id="brand-logo-img" src="" alt="NARIVAE Logo" style="display:none;" />
+          <div class="brand-text">
+            <span class="brand-title" id="brand-title-text">NARIVAE</span>
+            <span class="brand-subtitle" id="brand-subtitle-text">ETHNIC WEAR</span>
+          </div>
+        </a>
+
+        <!-- Main Navigation Links -->
+        <nav class="main-nav" id="main-nav-links">
+          <!-- Dynamically populated from data.js -->
+        </nav>
+
+        <!-- Actions: Search, Wishlist, Cart -->
+        <div class="header-actions">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" id="search-input" placeholder="Search ethnic suits..." />
+          </div>
+
+          <button class="icon-btn" id="wishlist-toggle-btn" title="Wishlist" onclick="alert('Wishlist feature: Click the heart on any item to save it!')">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span class="badge-count" id="wishlist-badge-count">0</span>
+          </button>
+
+          <button class="icon-btn" id="cart-toggle-btn" title="Shopping Bag">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span class="badge-count" id="cart-badge-count">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION (Slider / Video Banner) -->
+  <section class="hero-section">
+    <div class="hero-slider" id="hero-slider-container">
+      <!-- Dynamically populated hero slides -->
+    </div>
+  </section>
+
+  <!-- REFERENCE 1: SELLING HOT SLIDER SECTION -->
+  <section class="selling-hot-section">
+    <div class="container">
+      <div class="selling-hot-container">
+        <!-- Left Title Box -->
+        <div class="selling-hot-left">
+          <h2 class="selling-hot-title" id="hot-selling-title">Selling hot!</h2>
+          <p class="selling-hot-subtext" id="hot-selling-subtext">Grab yours before it's gone</p>
+          <a href="#catalog" class="shop-now-btn" id="hot-selling-btn">SHOP NOW</a>
+        </div>
+
+        <!-- Right Product Cards Slider -->
+        <div class="hot-slider-wrapper">
+          <button class="slider-arrow prev" id="hot-slider-prev" aria-label="Previous Slide">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          
+          <div class="hot-slider-track" id="hot-slider-track">
+            <!-- Dynamically populated hot seller product cards -->
+          </div>
+
+          <button class="slider-arrow next" id="hot-slider-next" aria-label="Next Slide">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMOTIONAL BANNER SECTION -->
+  <section class="promo-banner-section">
+    <div class="container">
+      <div class="promo-banner-card">
+        <img class="promo-banner-bg" id="promo-bg-img" src="" alt="Festive Offer Banner" />
+        <div class="promo-banner-content">
+          <h3 class="promo-title" id="promo-title">GRAB UP TO 60% OFF ON FESTIVE SUITS</h3>
+          <p class="promo-subtitle" id="promo-subtitle">Use Code FESTIVE10 for an additional 10% instant discount on WhatsApp!</p>
+          <a href="https://wa.me/918511414656" target="_blank" class="promo-whatsapp-btn" id="promo-wa-btn">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+            <span>CLAIM DISCOUNT ON WHATSAPP</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REFERENCE 2: 4-SPAN CATALOG GRID SECTION -->
+  <section class="catalog-section" id="catalog">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title" id="catalog-title">Curated Ethnic Collection</h2>
+        <p class="section-subtitle" id="catalog-subtext">Handcrafted traditional fits, premium fabrics & artisanal detailing</p>
+      </div>
+
+      <!-- Filter Categories -->
+      <div class="filter-tabs" id="filter-tabs">
+        <!-- Filter buttons dynamically rendered -->
+      </div>
+
+      <!-- 4-Column Grid -->
+      <div class="catalog-grid" id="catalog-grid">
+        <!-- Dynamically rendered product cards -->
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK VIEW PRODUCT MODAL -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="product-modal-container">
+      <button class="modal-close-btn" id="modal-close-btn">&times;</button>
+      <div class="modal-body-content">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- CART DRAWER -->
+  <div class="drawer-overlay" id="cart-drawer-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">Your Shopping Bag</h3>
+      <button id="cart-close-btn" style="font-size:1.5rem;">&times;</button>
+    </div>
+    <div class="drawer-body" id="cart-drawer-body">
+      <!-- Cart items -->
+    </div>
+    <div class="drawer-footer">
+      <div class="cart-subtotal-row">
+        <span>Subtotal Amount:</span>
+        <span id="cart-subtotal-val">₹0</span>
+      </div>
+      <a href="https://wa.me/918511414656" id="cart-wa-checkout-btn" target="_blank" class="btn-whatsapp-order" style="width:100%;">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+        <span>CHECKOUT VIA WHATSAPP</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- SITE FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Col 1: Brand Info -->
+        <div>
+          <h3 class="footer-col-title" id="footer-logo-text">NARIVAE</h3>
+          <p class="footer-bio" id="footer-bio">
+            Authentic Indian ethnic wear, suit sets, and flared Anarkalis designed to celebrate grace and luxury.
+          </p>
+          <div class="payment-badges-row">
+            <span class="payment-badge">UPI</span>
+            <span class="payment-badge">GPay</span>
+            <span class="payment-badge">PhonePe</span>
+            <span class="payment-badge">Paytm</span>
+            <span class="payment-badge">COD</span>
+          </div>
+        </div>
+
+        <!-- Col 2: Quick Links -->
+        <div>
+          <h4 class="footer-col-title">QUICK LINKS</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home Store</a></li>
+            <li><a href="#catalog">Featured Collection</a></li>
+            <li><a href="#sale">Festive Offers</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Customer Care -->
+        <div>
+          <h4 class="footer-col-title">CUSTOMER CARE</h4>
+          <ul class="footer-links">
+            <li><a href="#" onclick="alert('Size replacement available within 7 days of delivery!')">Shipping & Returns</a></li>
+            <li><a href="#" onclick="alert('All orders shipped express via BlueDart/Delhivery.')">Order Tracking</a></li>
+            <li><a href="#" onclick="alert('Contact Business Care on WhatsApp: +918511414656')">Help & Support</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact Us -->
+        <div>
+          <h4 class="footer-col-title">GET IN TOUCH</h4>
+          <div class="footer-contact-item">
+            <a id="footer-wa-link" href="https://wa.me/918511414656" target="_blank">
+              <span>WhatsApp: +91 8511414656</span>
+            </a>
+          </div>
+          <div class="footer-contact-item">
+            <a id="footer-email-link" href="mailto:care@narivae.com">
+              <span>Email: care@narivae.com</span>
+            </a>
+          </div>
+          <p style="font-size:0.8rem; color:#888; margin-top:12px;">Mon - Sat | 10:00 AM - 7:00 PM IST</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 NARIVAE Ethnic Wear. All Rights Reserved. Hostable on GitHub Pages.</div>
+        <div>Made with ❤️ for Ethnic Couture</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
