@@ -280,17 +280,14 @@ const DEFAULT_STORE_DATA = {
         "2XL"
       ],
       "colors": "",
-      "mainImage": "https://drive.google.com/thumbnail?id=1zdy7I8bvWUgCu28zBeVg4G4egiZ7NyxX&sz=w1000",
+      "mainImage": "https://drive.google.com/thumbnail?id=1CS6dXbb8DnPZHbwLVT8Uf1l9c3wm1JNn&sz=w1000",
       "gallery": [
-        "https://drive.google.com/thumbnail?id=1zdy7I8bvWUgCu28zBeVg4G4egiZ7NyxX&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1c_63x2LcEbxbK8UHEgruge73Fawti6AK&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1obYOu9qC6HlC2A2rlUIULFHZcWuiyGkB&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1qMbQEGf-O2i2ZZow16BrEQRMsd73wjrn&sz=w1000",
         "https://drive.google.com/thumbnail?id=1CS6dXbb8DnPZHbwLVT8Uf1l9c3wm1JNn&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1fatKhGYCEkTTSm2eWsO0t5gR6fD7i4ND&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1De80klBsLxR2kgysufm7k7cMCzqKoVOY&sz=w1000",
         "https://drive.google.com/thumbnail?id=19qjXfCDFjgSHvYiXE_CHtDb7QJGXIiIa&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1UMEAjPOzBX3DGatfajOhTkUR3B_VnnmE&sz=w1000"
+        "https://drive.google.com/thumbnail?id=1c_63x2LcEbxbK8UHEgruge73Fawti6AK&sz=w1000",
+        "https://drive.google.com/thumbnail?id=1qMbQEGf-O2i2ZZow16BrEQRMsd73wjrn&sz=w1000",
+        "https://drive.google.com/thumbnail?id=1UMEAjPOzBX3DGatfajOhTkUR3B_VnnmE&sz=w1000",
+        "https://drive.google.com/thumbnail?id=1zdy7I8bvWUgCu28zBeVg4G4egiZ7NyxX&sz=w1000"
       ],
       "photosFolder": "https://drive.google.com/drive/folders/1xrleN6DrGq0Mjt0TE1GbGtp0WYHYt9xB",
       "description": "Crafted in heavy pure blooming vichitra silk fabric with full kali pattern anarkali, this anarkali brings together premium fabric and refined detailing. 3.50 to 3.80 meter fully flare anarkali gown, kurta length 48 49 inch approx. Comes complete with coordinated dupatta and bottom for a ready-to-style look. Fully stitched and ready to wear with standard ethnic sizing.",
