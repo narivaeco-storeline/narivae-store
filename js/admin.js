@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
      1. PASSCODE AUTHENTICATION LOCK
      ========================================================================== */
   function checkAuth() {
-    const sessionAuth = sessionStorage.getItem("narivae_admin_authed");
+    const sessionAuth = localStorage.getItem("narivae_admin_authed");
     if (sessionAuth === "true") {
       loginOverlay.style.display = "none";
       adminApp.style.display = "block";
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loginBtn.onclick = () => {
       const entered = (loginPassInput.value || "").trim();
       if (entered === DEFAULT_PASSCODE || entered === "admin") {
-        sessionStorage.setItem("narivae_admin_authed", "true");
+        localStorage.setItem("narivae_admin_authed", "true");
         loginErrorMsg.style.display = "none";
         checkAuth();
       } else {

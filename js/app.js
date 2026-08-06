@@ -74,6 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (store.branding.logoImageUrl && brandLogoImgEl) {
       brandLogoImgEl.src = store.branding.logoImageUrl;
       brandLogoImgEl.style.display = "block";
+      const brandTextContainer = document.querySelector(".brand-text-container");
+      if (brandTextContainer) brandTextContainer.style.display = "none";
     }
 
     // Dynamic Navigation Menu from Admin
