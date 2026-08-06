@@ -4,7 +4,21 @@
 
 /* ── Apply saved theme colors instantly on every page load ── */
 (function applyStoredTheme() {
-  const theme = JSON.parse(localStorage.getItem("narivae_theme_colors") || "null");
+  // First try to get theme from the store data (pushed via GitHub - works on ALL devices)
+  let theme = null;
+  try {
+    const storeRaw = localStorage.getItem("narivae_store_database_v5");
+    if (storeRaw) {
+      const storeData = JSON.parse(storeRaw);
+      if (storeData && storeData.branding && storeData.branding.theme) {
+        theme = storeData.branding.theme;
+      }
+    }
+    // Fallback: old separate key (backwards compat)
+    if (!theme) {
+      theme = JSON.parse(localStorage.getItem("narivae_theme_colors") || "null");
+    }
+  } catch(e) {}
   if (!theme) return;
   const root = document.documentElement;
   const darken = (hex, amt) => {

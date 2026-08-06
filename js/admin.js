@@ -1163,15 +1163,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Load saved theme on admin panel itself
-  const savedTheme = JSON.parse(localStorage.getItem(THEME_KEY) || "null") || DEFAULT_THEME;
+  // Load saved theme from store.branding.theme (unified with store data)
+  const savedTheme = (store.branding && store.branding.theme) ? store.branding.theme : DEFAULT_THEME;
   applyThemeToPage(savedTheme);
 
   // Sync pickers once tab is opened
   const themeTabNav = document.querySelector('[data-tab="theme"]');
   if (themeTabNav) {
     themeTabNav.addEventListener("click", () => {
-      const current = JSON.parse(localStorage.getItem(THEME_KEY) || "null") || DEFAULT_THEME;
+      const current = (store.branding && store.branding.theme) ? store.branding.theme : DEFAULT_THEME;
       setPickerValues(current);
       updatePreviewBoxColors(current);
     });
@@ -1217,7 +1217,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (saveThemeBtn) {
     saveThemeBtn.addEventListener("click", () => {
       const theme = getPickerValues();
-      localStorage.setItem(THEME_KEY, JSON.stringify(theme));
+      // Save theme inside store.branding.theme so Publish picks it up automatically
+      store.branding.theme = theme;
+      saveStoreData(store);
       applyThemeToPage(theme);
       saveThemeBtn.textContent = "✅ Theme Saved & Applied!";
       setTimeout(() => { saveThemeBtn.textContent = "💾 Save & Apply Theme to Storefront"; }, 2500);
@@ -1228,7 +1230,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetThemeBtn = document.getElementById("reset-theme-btn");
   if (resetThemeBtn) {
     resetThemeBtn.addEventListener("click", () => {
-      localStorage.removeItem(THEME_KEY);
+      store.branding.theme = DEFAULT_THEME;
+      saveStoreData(store);
       setPickerValues(DEFAULT_THEME);
       applyThemeToPage(DEFAULT_THEME);
       updatePreviewBoxColors(DEFAULT_THEME);
