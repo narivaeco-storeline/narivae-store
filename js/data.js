@@ -157,12 +157,6 @@ const DEFAULT_STORE_DATA = {
       "mainImage": "https://drive.google.com/thumbnail?id=1pe_bxVdgACYBqwm7qNCNLXOB-AtTfkaP&sz=w1000",
       "gallery": [
         "https://drive.google.com/thumbnail?id=1pe_bxVdgACYBqwm7qNCNLXOB-AtTfkaP&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1rTw_o92pbCN91P_SfNQCvLGXri1YeIS6&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1L4NDazh2X7AmuGEA4gF4XTQHBozZM_Gh&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1E9z8awMezhXOmz1x3GBKt-L5z0OIkxUB&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1VrymhV2Jep4HHblHGWNoMgweuMWNEK7D&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1z_hP_Lv6OMoYzN_9xo2uCibTqhEi3LYL&sz=w1000",
-        "https://drive.google.com/thumbnail?id=1xz6DjTmRYQnra0Ycis4_v1xORmDZ1f0A&sz=w1000",
         "https://drive.google.com/thumbnail?id=1ELojp6qMGEqaYHtVBOnV392UGGC2DPJs&sz=w1000",
         "https://drive.google.com/thumbnail?id=1M7nJO61ftyVzqpo_iHVGhVsX1WmIyxWy&sz=w1000",
         "https://drive.google.com/thumbnail?id=1Bc4xIPcvF4YgtqjCh18MkmuM08mXqGoL&sz=w1000",
