@@ -894,4 +894,173 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial Auth Check
   checkAuth();
+
+  /* ==========================================================================
+     11. THEME COLOR ENGINE
+     ========================================================================== */
+
+  const THEME_KEY = "narivae_theme_colors";
+
+  const DEFAULT_THEME = {
+    primary: "#861937",
+    gold: "#D4AF37",
+    rose: "#D86C88",
+    discount: "#D93838",
+    bgWarm: "#FBF9F5",
+    bgCard: "#FFFFFF",
+    textMain: "#1A1A1A",
+    goldLight: "#F7EFD8"
+  };
+
+  const PRESETS = {
+    royal:    { primary:"#861937", gold:"#D4AF37", rose:"#D86C88", discount:"#D93838", bgWarm:"#FBF9F5", bgCard:"#FFFFFF", textMain:"#1A1A1A", goldLight:"#F7EFD8" },
+    emerald:  { primary:"#1a6b4a", gold:"#c9a84c", rose:"#4caf85", discount:"#e53935", bgWarm:"#F4FAF7", bgCard:"#FFFFFF", textMain:"#1A1A1A", goldLight:"#E8F5E9" },
+    navy:     { primary:"#1b2a6b", gold:"#e8b84b", rose:"#5c7fd8", discount:"#e53935", bgWarm:"#F3F5FC", bgCard:"#FFFFFF", textMain:"#1A1A1A", goldLight:"#EEF1FC" },
+    purple:   { primary:"#5b2d8e", gold:"#c9a0dc", rose:"#e07bb5", discount:"#e53935", bgWarm:"#FAF6FF", bgCard:"#FFFFFF", textMain:"#1A1A1A", goldLight:"#F3E8FF" },
+    rose:     { primary:"#c2185b", gold:"#f48fb1", rose:"#f06292", discount:"#e53935", bgWarm:"#FFF5F8", bgCard:"#FFFFFF", textMain:"#1A1A1A", goldLight:"#FFE8F0" },
+    midnight: { primary:"#1a1a2e", gold:"#e94560", rose:"#e94560", discount:"#ff6b6b", bgWarm:"#12121f", bgCard:"#1e1e30", textMain:"#EFEFEF", goldLight:"#232340" }
+  };
+
+  function applyThemeToPage(theme) {
+    const root = document.documentElement;
+    root.style.setProperty("--primary-maroon", theme.primary);
+    root.style.setProperty("--maroon-hover", darkenHex(theme.primary, 20));
+    root.style.setProperty("--gold-accent", theme.gold);
+    root.style.setProperty("--gold-light", theme.goldLight);
+    root.style.setProperty("--rose-pink", theme.rose);
+    root.style.setProperty("--rose-hover", darkenHex(theme.rose, 20));
+    root.style.setProperty("--bg-warm", theme.bgWarm);
+    root.style.setProperty("--bg-card", theme.bgCard);
+    root.style.setProperty("--text-main", theme.textMain);
+    root.style.setProperty("--discount-red", theme.discount);
+  }
+
+  function darkenHex(hex, amount) {
+    let col = hex.replace("#","");
+    if (col.length === 3) col = col.split("").map(c=>c+c).join("");
+    let r = Math.max(0, parseInt(col.substring(0,2),16) - amount);
+    let g = Math.max(0, parseInt(col.substring(2,4),16) - amount);
+    let b = Math.max(0, parseInt(col.substring(4,6),16) - amount);
+    return "#" + [r,g,b].map(v => v.toString(16).padStart(2,"0")).join("");
+  }
+
+  function updatePreviewBoxColors(theme) {
+    const ph = document.getElementById("preview-header");
+    const pg = document.getElementById("preview-gold");
+    const pb = document.getElementById("preview-btn");
+    const pbadge = document.getElementById("preview-badge");
+    const pd = document.getElementById("preview-discount");
+    const pbg = document.getElementById("preview-bg");
+    if (ph) ph.style.background = theme.primary;
+    if (pg) pg.style.color = theme.gold;
+    if (pb) pb.style.background = theme.primary;
+    if (pbadge) pbadge.style.background = theme.rose;
+    if (pd) pd.style.background = theme.discount;
+    if (pbg) { pbg.style.background = theme.bgWarm; pbg.style.color = theme.textMain; }
+  }
+
+  function getPickerValues() {
+    return {
+      primary:   document.getElementById("color-primary")?.value || DEFAULT_THEME.primary,
+      gold:      document.getElementById("color-gold")?.value    || DEFAULT_THEME.gold,
+      rose:      document.getElementById("color-rose")?.value    || DEFAULT_THEME.rose,
+      discount:  document.getElementById("color-discount")?.value|| DEFAULT_THEME.discount,
+      bgWarm:    document.getElementById("color-bg-warm")?.value || DEFAULT_THEME.bgWarm,
+      bgCard:    document.getElementById("color-bg-card")?.value || DEFAULT_THEME.bgCard,
+      textMain:  document.getElementById("color-text-main")?.value || DEFAULT_THEME.textMain,
+      goldLight: document.getElementById("color-gold-light")?.value || DEFAULT_THEME.goldLight
+    };
+  }
+
+  function setPickerValues(theme) {
+    const map = [
+      ["color-primary", "color-primary-hex", theme.primary],
+      ["color-gold", "color-gold-hex", theme.gold],
+      ["color-rose", "color-rose-hex", theme.rose],
+      ["color-discount", "color-discount-hex", theme.discount],
+      ["color-bg-warm", "color-bg-warm-hex", theme.bgWarm],
+      ["color-bg-card", "color-bg-card-hex", theme.bgCard],
+      ["color-text-main", "color-text-main-hex", theme.textMain],
+      ["color-gold-light", "color-gold-light-hex", theme.goldLight]
+    ];
+    map.forEach(([pickerId, hexId, val]) => {
+      const picker = document.getElementById(pickerId);
+      const hex = document.getElementById(hexId);
+      if (picker) picker.value = val;
+      if (hex) hex.value = val;
+    });
+  }
+
+  // Load saved theme on admin panel itself
+  const savedTheme = JSON.parse(localStorage.getItem(THEME_KEY) || "null") || DEFAULT_THEME;
+  applyThemeToPage(savedTheme);
+
+  // Sync pickers once tab is opened
+  const themeTabNav = document.querySelector('[data-tab="theme"]');
+  if (themeTabNav) {
+    themeTabNav.addEventListener("click", () => {
+      const current = JSON.parse(localStorage.getItem(THEME_KEY) || "null") || DEFAULT_THEME;
+      setPickerValues(current);
+      updatePreviewBoxColors(current);
+    });
+  }
+
+  // Live update: color pickers → hex text + preview
+  ["primary","gold","rose","discount","bg-warm","bg-card","text-main","gold-light"].forEach(name => {
+    const picker = document.getElementById("color-" + name);
+    const hexInput = document.getElementById("color-" + name + "-hex");
+    if (picker && hexInput) {
+      picker.addEventListener("input", () => {
+        hexInput.value = picker.value;
+        const t = getPickerValues();
+        applyThemeToPage(t);
+        updatePreviewBoxColors(t);
+      });
+      hexInput.addEventListener("input", () => {
+        const val = hexInput.value.trim();
+        if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+          picker.value = val;
+          const t = getPickerValues();
+          applyThemeToPage(t);
+          updatePreviewBoxColors(t);
+        }
+      });
+    }
+  });
+
+  // Preset palette buttons
+  document.querySelectorAll(".theme-preset-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const preset = PRESETS[btn.dataset.preset];
+      if (preset) {
+        setPickerValues(preset);
+        applyThemeToPage(preset);
+        updatePreviewBoxColors(preset);
+      }
+    });
+  });
+
+  // Save button
+  const saveThemeBtn = document.getElementById("save-theme-btn");
+  if (saveThemeBtn) {
+    saveThemeBtn.addEventListener("click", () => {
+      const theme = getPickerValues();
+      localStorage.setItem(THEME_KEY, JSON.stringify(theme));
+      applyThemeToPage(theme);
+      saveThemeBtn.textContent = "✅ Theme Saved & Applied!";
+      setTimeout(() => { saveThemeBtn.textContent = "💾 Save & Apply Theme to Storefront"; }, 2500);
+    });
+  }
+
+  // Reset button
+  const resetThemeBtn = document.getElementById("reset-theme-btn");
+  if (resetThemeBtn) {
+    resetThemeBtn.addEventListener("click", () => {
+      localStorage.removeItem(THEME_KEY);
+      setPickerValues(DEFAULT_THEME);
+      applyThemeToPage(DEFAULT_THEME);
+      updatePreviewBoxColors(DEFAULT_THEME);
+      alert("Theme reset to default Royal Maroon palette!");
+    });
+  }
 });

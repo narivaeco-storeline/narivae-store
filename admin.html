@@ -47,6 +47,36 @@
       grid-template-columns: 1fr 1fr;
       gap: 20px;
     }
+    .color-swatch {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 2px;
+      background: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .color-picker-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .color-picker-row label {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--text-main);
+    }
+    .color-picker-row label small {
+      font-weight: 400;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 2px;
+    }
+    .theme-preset-btn:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 <body class="admin-body">
@@ -95,6 +125,9 @@
         </div>
         <div class="admin-nav-item" data-tab="branding">
           <span>⚙️ All Site Headings & Bio</span>
+        </div>
+        <div class="admin-nav-item" data-tab="theme">
+          <span>🎨 Theme Colors</span>
         </div>
         <div class="admin-nav-item" data-tab="database">
           <span>💾 Backup & Import JSON</span>
@@ -389,6 +422,117 @@
           <h3 style="color:red;">Reset Store Data</h3>
           <p style="font-size:0.9rem; color:#666; margin-top:6px; margin-bottom:16px;">Restore initial default ethnic wear items and reset custom changes.</p>
           <button style="background:red; color:#fff; padding:10px 20px; border-radius:var(--radius-sm); font-weight:600;" id="reset-db-btn">Reset to Default Store Data</button>
+        </div>
+      </div>
+
+      <!-- TAB 8: THEME COLOR CONTROLS -->
+      <div class="tab-panel" id="tab-theme" style="display:none;">
+        <h2 style="font-family:var(--font-serif); margin-bottom:6px;">🎨 Theme Color Controls</h2>
+        <p style="color:#666; font-size:0.9rem; margin-bottom:24px;">Changes apply instantly across your entire storefront — no refresh needed.</p>
+
+        <!-- PRESET PALETTES -->
+        <div class="admin-card" style="border-left:4px solid var(--gold-accent);">
+          <h3 style="margin-bottom:14px;">✨ Quick Preset Palettes</h3>
+          <div style="display:flex; flex-wrap:wrap; gap:12px;">
+            <button class="theme-preset-btn" data-preset="royal" style="background:linear-gradient(135deg,#861937,#D4AF37); color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">👑 Royal Maroon (Default)</button>
+            <button class="theme-preset-btn" data-preset="emerald" style="background:linear-gradient(135deg,#1a6b4a,#c9a84c); color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">🌿 Emerald Gold</button>
+            <button class="theme-preset-btn" data-preset="navy" style="background:linear-gradient(135deg,#1b2a6b,#e8b84b); color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">🌊 Royal Navy</button>
+            <button class="theme-preset-btn" data-preset="purple" style="background:linear-gradient(135deg,#5b2d8e,#e0a0c0); color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">💜 Regal Purple</button>
+            <button class="theme-preset-btn" data-preset="rose" style="background:linear-gradient(135deg,#c2185b,#f48fb1); color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">🌸 Deep Rose</button>
+            <button class="theme-preset-btn" data-preset="midnight" style="background:linear-gradient(135deg,#1a1a2e,#e94560); color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">🌙 Midnight</button>
+          </div>
+        </div>
+
+        <!-- BRAND / PRIMARY COLORS -->
+        <div class="admin-card">
+          <h3 style="margin-bottom:16px;">🎯 Brand Colors</h3>
+          <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;">
+            <div class="color-picker-row">
+              <label>Primary Brand Color <small>(Header, Buttons)</small></label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <input type="color" id="color-primary" value="#861937" class="color-swatch" />
+                <input type="text" id="color-primary-hex" value="#861937" class="form-control" style="width:110px; font-family:monospace;" />
+              </div>
+            </div>
+            <div class="color-picker-row">
+              <label>Gold Accent <small>(Taglines, Stars, Borders)</small></label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <input type="color" id="color-gold" value="#D4AF37" class="color-swatch" />
+                <input type="text" id="color-gold-hex" value="#D4AF37" class="form-control" style="width:110px; font-family:monospace;" />
+              </div>
+            </div>
+            <div class="color-picker-row">
+              <label>Accent / CTA Color <small>(Cart Icon, Badges)</small></label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <input type="color" id="color-rose" value="#D86C88" class="color-swatch" />
+                <input type="text" id="color-rose-hex" value="#D86C88" class="form-control" style="width:110px; font-family:monospace;" />
+              </div>
+            </div>
+            <div class="color-picker-row">
+              <label>Discount / Sale Tag <small>(Price Badges)</small></label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <input type="color" id="color-discount" value="#D93838" class="color-swatch" />
+                <input type="text" id="color-discount-hex" value="#D93838" class="form-control" style="width:110px; font-family:monospace;" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BACKGROUND & TEXT -->
+        <div class="admin-card">
+          <h3 style="margin-bottom:16px;">🖼️ Background &amp; Text Colors</h3>
+          <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;">
+            <div class="color-picker-row">
+              <label>Page Background <small>(Main warm tint)</small></label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <input type="color" id="color-bg-warm" value="#FBF9F5" class="color-swatch" />
+                <input type="text" id="color-bg-warm-hex" value="#FBF9F5" class="form-control" style="width:110px; font-family:monospace;" />
+              </div>
+            </div>
+            <div class="color-picker-row">
+              <label>Card Background <small>(Product cards)</small></label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <input type="color" id="color-bg-card" value="#FFFFFF" class="color-swatch" />
+                <input type="text" id="color-bg-card-hex" value="#FFFFFF" class="form-control" style="width:110px; font-family:monospace;" />
+              </div>
+            </div>
+            <div class="color-picker-row">
+              <label>Main Text Color <small>(Headings, titles)</small></label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <input type="color" id="color-text-main" value="#1A1A1A" class="color-swatch" />
+                <input type="text" id="color-text-main-hex" value="#1A1A1A" class="form-control" style="width:110px; font-family:monospace;" />
+              </div>
+            </div>
+            <div class="color-picker-row">
+              <label>Gold Light Tint <small>(Section backgrounds)</small></label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <input type="color" id="color-gold-light" value="#F7EFD8" class="color-swatch" />
+                <input type="text" id="color-gold-light-hex" value="#F7EFD8" class="form-control" style="width:110px; font-family:monospace;" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LIVE PREVIEW -->
+        <div class="admin-card" style="background: var(--bg-warm);">
+          <h3 style="margin-bottom:14px;">👁️ Live Preview</h3>
+          <div id="theme-preview-box" style="padding:20px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-color);">
+            <div style="display:flex; align-items:center; gap:16px; margin-bottom:14px;">
+              <div id="preview-header" style="background:var(--primary-maroon); color:#fff; padding:10px 22px; border-radius:8px; font-weight:700; font-family:var(--font-serif);">NARIVAE</div>
+              <div id="preview-gold" style="color:var(--gold-accent); font-weight:600; font-size:0.85rem;">✦ ROYAL ETHNIC ELEGANCE ✦</div>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <div id="preview-btn" style="background:var(--primary-maroon); color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:600;">Buy Now</div>
+              <div id="preview-badge" style="background:var(--rose-pink); color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:600;">BEST-SELLER</div>
+              <div id="preview-discount" style="background:var(--discount-red); color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:600;">43% OFF</div>
+              <div id="preview-bg" style="background:var(--bg-warm); border:1px solid var(--border-color); padding:8px 18px; border-radius:8px; font-size:0.85rem;">Page BG</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:10px;">
+          <button class="btn-primary" id="save-theme-btn" style="flex:1; justify-content:center;">💾 Save &amp; Apply Theme to Storefront</button>
+          <button id="reset-theme-btn" style="padding:10px 20px; border-radius:8px; border:1px solid #ccc; background:#fff; cursor:pointer; font-weight:600;">↺ Reset to Default</button>
         </div>
       </div>
 
