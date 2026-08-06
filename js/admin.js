@@ -5,7 +5,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   let store = getStoreData();
-  const DEFAULT_PASSCODE = "admin123";
+  const DEFAULT_PASSCODE = "nariaeadmin999123";
 
   // Elements
   const loginOverlay = document.getElementById("admin-login-overlay");
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
         checkAuth();
       } else {
         loginErrorMsg.style.display = "block";
-        loginErrorMsg.textContent = "Invalid passcode. Default passcode is admin123";
+        loginErrorMsg.textContent = "Invalid passcode.";
       }
     };
   }
