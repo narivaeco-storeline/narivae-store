@@ -438,6 +438,28 @@
 
   <!-- Page Logic Script -->
   <script src="js/data.js"></script>
+  <!-- Apply saved theme colors instantly (same as storefront) -->
+  <script>
+    (function applyStoredTheme() {
+      const theme = JSON.parse(localStorage.getItem("narivae_theme_colors") || "null");
+      if (!theme) return;
+      const root = document.documentElement;
+      const darken = (hex, amt) => {
+        let c = hex.replace("#",""); if(c.length===3) c=c.split("").map(x=>x+x).join("");
+        return "#"+[0,2,4].map(i=>Math.max(0,parseInt(c.substr(i,2),16)-amt).toString(16).padStart(2,"0")).join("");
+      };
+      root.style.setProperty("--primary-maroon", theme.primary);
+      root.style.setProperty("--maroon-hover",   darken(theme.primary, 20));
+      root.style.setProperty("--gold-accent",    theme.gold);
+      root.style.setProperty("--gold-light",     theme.goldLight);
+      root.style.setProperty("--rose-pink",      theme.rose);
+      root.style.setProperty("--rose-hover",     darken(theme.rose, 20));
+      root.style.setProperty("--bg-warm",        theme.bgWarm);
+      root.style.setProperty("--bg-card",        theme.bgCard);
+      root.style.setProperty("--text-main",      theme.textMain);
+      root.style.setProperty("--discount-red",   theme.discount);
+    })();
+  </script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const store = getStoreData();

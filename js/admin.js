@@ -371,17 +371,52 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!gridEl) return;
 
     if (currentProductGallery.length === 0) {
-      gridEl.innerHTML = `<span style="font-size:0.8rem; color:#888;">No gallery images uploaded yet. Select 8-10 images below.</span>`;
+      gridEl.innerHTML = `<div style="font-size:0.8rem; color:#888; padding:10px;">No gallery images yet. Upload below — first image = Main Image.</div>`;
       return;
     }
 
     gridEl.innerHTML = currentProductGallery.map((img, idx) => `
-      <div style="position:relative; width:70px; height:90px; border-radius:6px; overflow:hidden; border:1px solid #ccc;">
-        <img src="${img}" style="width:100%; height:100%; object-fit:cover;" />
-        <button style="position:absolute; top:2px; right:2px; background:red; color:#fff; border-radius:50%; width:18px; height:18px; font-size:10px; display:flex; align-items:center; justify-content:center;" onclick="removeGalleryImg(${idx})">&times;</button>
-        ${idx === 0 ? `<span style="position:absolute; bottom:0; inset-x:0; background:rgba(0,0,0,0.7); color:#fff; font-size:8px; text-align:center;">MAIN</span>` : ''}
+      <div class="gallery-thumb-item" draggable="true" data-idx="${idx}"
+        style="position:relative; width:80px; height:100px; border-radius:8px; overflow:hidden;
+               border:${idx===0 ? '2px solid #D4AF37' : '1px solid #ddd'};
+               cursor:grab; flex-shrink:0; background:#f5f5f5;">
+        <img src="${img}" style="width:100%; height:100%; object-fit:cover;" draggable="false" />
+        <button onclick="removeGalleryImg(${idx})"
+          style="position:absolute; top:3px; right:3px; background:rgba(200,0,0,0.85);
+                 color:#fff; border:none; border-radius:50%; width:20px; height:20px;
+                 font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">✕</button>
+        ${idx === 0
+          ? `<div style="position:absolute; bottom:0; inset-x:0; background:rgba(212,175,55,0.92);
+                         color:#fff; font-size:8px; font-weight:700; text-align:center; padding:2px 0;">★ MAIN</div>`
+          : `<div style="position:absolute; bottom:0; inset-x:0; background:rgba(0,0,0,0.45);
+                         color:#fff; font-size:8px; text-align:center; padding:2px 0;">⇅ drag</div>`
+        }
       </div>
     `).join('');
+
+    // Attach drag-and-drop reorder events
+    let dragSrcIdx = null;
+    gridEl.querySelectorAll(".gallery-thumb-item").forEach(item => {
+      item.addEventListener("dragstart", e => {
+        dragSrcIdx = parseInt(item.dataset.idx);
+        item.style.opacity = "0.4";
+        e.dataTransfer.effectAllowed = "move";
+      });
+      item.addEventListener("dragend", () => { item.style.opacity = "1"; });
+      item.addEventListener("dragover", e => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; item.style.border = "2px dashed #861937"; });
+      item.addEventListener("dragleave", () => { item.style.border = parseInt(item.dataset.idx)===0 ? "2px solid #D4AF37" : "1px solid #ddd"; });
+      item.addEventListener("drop", e => {
+        e.preventDefault();
+        const dropIdx = parseInt(item.dataset.idx);
+        if (dragSrcIdx === null || dragSrcIdx === dropIdx) return;
+        // Reorder array
+        const moved = currentProductGallery.splice(dragSrcIdx, 1)[0];
+        currentProductGallery.splice(dropIdx, 0, moved);
+        // First image is always main
+        setVal("prod-form-img", currentProductGallery[0]);
+        renderGalleryPreviewGrid();
+      });
+    });
   }
 
   window.removeGalleryImg = function(idx) {
