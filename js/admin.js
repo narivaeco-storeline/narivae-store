@@ -781,46 +781,82 @@ document.addEventListener("DOMContentLoaded", () => {
       statusMsg.style.color = "#666";
       
       try {
-        statusMsg.textContent = "Fetching current data file...";
-        // 1. Get SHA and Content
-        const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/js/data.js`, {
+        // --- 1. PUBLISH STORE DATA (data.js) ---
+        statusMsg.textContent = "Step 1/2: Publishing store data (products, titles, branding)...";
+        const getResData = await fetch(`https://api.github.com/repos/${repo}/contents/js/data.js`, {
           headers: { "Authorization": `token ${pat}`, "Accept": "application/vnd.github.v3+json" }
         });
-        const getJson = await getRes.json();
-        if (!getRes.ok) throw new Error(getJson.message || "Failed to fetch file.");
-        const sha = getJson.sha;
-
-        statusMsg.textContent = "Updating content...";
-        // Decode base64 to utf-8 safely
-        const binaryString = atob(getJson.content);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
-        const currentText = new TextDecoder().decode(bytes);
-
-        // Replace DEFAULT_STORE_DATA
-        const newJsonStr = JSON.stringify(store, null, 2);
-        const newText = currentText.replace(/const DEFAULT_STORE_DATA = \{[\s\S]*?\};\n\n\/\/ Storage helper functions/, `const DEFAULT_STORE_DATA = ${newJsonStr};\n\n// Storage helper functions`);
+        const getJsonData = await getResData.json();
+        if (!getResData.ok) throw new Error(getJsonData.message || "Failed to fetch data.js");
         
-        // Encode utf-8 to base64 safely
-        const utf8Bytes = new TextEncoder().encode(newText);
-        let binaryStr = "";
-        for (let i = 0; i < utf8Bytes.length; i++) binaryStr += String.fromCharCode(utf8Bytes[i]);
-        const newBase64 = btoa(binaryStr);
+        let binaryStringData = atob(getJsonData.content);
+        let bytesData = new Uint8Array(binaryStringData.length);
+        for (let i = 0; i < binaryStringData.length; i++) bytesData[i] = binaryStringData.charCodeAt(i);
+        let currentTextData = new TextDecoder().decode(bytesData);
 
-        statusMsg.textContent = "Pushing to GitHub...";
-        const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/js/data.js`, {
+        const newJsonStr = JSON.stringify(store, null, 2);
+        const newTextData = currentTextData.replace(/const DEFAULT_STORE_DATA = \{[\s\S]*?\};\n\n\/\/ Storage helper functions/, `const DEFAULT_STORE_DATA = ${newJsonStr};\n\n// Storage helper functions`);
+        
+        let utf8BytesData = new TextEncoder().encode(newTextData);
+        let binaryStrData = "";
+        for (let i = 0; i < utf8BytesData.length; i++) binaryStrData += String.fromCharCode(utf8BytesData[i]);
+        
+        const putResData = await fetch(`https://api.github.com/repos/${repo}/contents/js/data.js`, {
           method: "PUT",
           headers: { "Authorization": `token ${pat}`, "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json" },
           body: JSON.stringify({
-            message: "Update store data from admin panel",
-            content: newBase64,
-            sha: sha
+            message: "Publish updated store catalog and text from Admin",
+            content: btoa(binaryStrData),
+            sha: getJsonData.sha
           })
         });
+        if (!putResData.ok) throw new Error("Failed to push data.js to GitHub.");
+
+        // --- 2. PUBLISH THEME COLORS (styles.css) ---
+        statusMsg.textContent = "Step 2/2: Publishing theme colors (styles.css)...";
+        const theme = JSON.parse(localStorage.getItem(THEME_KEY) || "null");
+        if (theme) {
+          const getResCss = await fetch(`https://api.github.com/repos/${repo}/contents/css/styles.css`, {
+            headers: { "Authorization": `token ${pat}`, "Accept": "application/vnd.github.v3+json" }
+          });
+          const getJsonCss = await getResCss.json();
+          if (getResCss.ok) {
+            let binaryStringCss = atob(getJsonCss.content);
+            let bytesCss = new Uint8Array(binaryStringCss.length);
+            for (let i = 0; i < binaryStringCss.length; i++) bytesCss[i] = binaryStringCss.charCodeAt(i);
+            let currentTextCss = new TextDecoder().decode(bytesCss);
+
+            const darken = (hex, amt) => { let c=hex.replace("#",""); if(c.length===3) c=c.split("").map(x=>x+x).join(""); return "#"+[0,2,4].map(i=>Math.max(0,parseInt(c.substr(i,2),16)-amt).toString(16).padStart(2,"0")).join(""); };
+
+            let newTextCss = currentTextCss
+              .replace(/--primary-maroon:\s*#?[0-9A-Fa-f]+;/, `--primary-maroon: ${theme.primary};`)
+              .replace(/--maroon-hover:\s*#?[0-9A-Fa-f]+;/, `--maroon-hover: ${darken(theme.primary, 20)};`)
+              .replace(/--gold-accent:\s*#?[0-9A-Fa-f]+;/, `--gold-accent: ${theme.gold};`)
+              .replace(/--gold-light:\s*#?[0-9A-Fa-f]+;/, `--gold-light: ${theme.goldLight};`)
+              .replace(/--rose-pink:\s*#?[0-9A-Fa-f]+;/, `--rose-pink: ${theme.rose};`)
+              .replace(/--rose-hover:\s*#?[0-9A-Fa-f]+;/, `--rose-hover: ${darken(theme.rose, 20)};`)
+              .replace(/--bg-warm:\s*#?[0-9A-Fa-f]+;/, `--bg-warm: ${theme.bgWarm};`)
+              .replace(/--bg-card:\s*#?[0-9A-Fa-f]+;/, `--bg-card: ${theme.bgCard};`)
+              .replace(/--text-main:\s*#?[0-9A-Fa-f]+;/, `--text-main: ${theme.textMain};`)
+              .replace(/--discount-red:\s*#?[0-9A-Fa-f]+;/, `--discount-red: ${theme.discount};`);
+
+            let utf8BytesCss = new TextEncoder().encode(newTextCss);
+            let binaryStrCss = "";
+            for (let i = 0; i < utf8BytesCss.length; i++) binaryStrCss += String.fromCharCode(utf8BytesCss[i]);
+
+            await fetch(`https://api.github.com/repos/${repo}/contents/css/styles.css`, {
+              method: "PUT",
+              headers: { "Authorization": `token ${pat}`, "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json" },
+              body: JSON.stringify({
+                message: "Publish updated theme colors from Admin",
+                content: btoa(binaryStrCss),
+                sha: getJsonCss.sha
+              })
+            });
+          }
+        }
         
-        if (!putRes.ok) throw new Error("Failed to push file to GitHub.");
-        
-        statusMsg.textContent = "✅ Successfully published to live site! Changes will reflect globally in ~1 minute.";
+        statusMsg.textContent = "✅ Successfully published EVERYTHING to live site! Changes will reflect globally in ~1 minute.";
         statusMsg.style.color = "green";
         setTimeout(() => { publishGithubBtn.textContent = "Push to GitHub"; publishGithubBtn.disabled = false; }, 3000);
       } catch (err) {
