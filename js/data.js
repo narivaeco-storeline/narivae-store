@@ -7,7 +7,7 @@ const DEFAULT_STORE_DATA = {
   "branding": {
     "siteName": "NARIVAE",
     "tagline": "ROYAL ETHNIC ELEGANCE",
-    "logoText": "narivae",
+    "logoText": "",
     "logoSubtext": "",
     "logoImageUrl": "",
     "whatsappNumber": "918511414656",
