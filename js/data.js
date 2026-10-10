@@ -12612,67 +12612,10 @@ function resetStoreData() {
   return DEFAULT_STORE_DATA;
 }
 
-// Generate formatted WhatsApp message URL
-function buildWhatsAppOrderUrl(whatsappNumber, productTitle, selectedSize, price, mainImage) {
+// Generate a WhatsApp order with a direct link to the live product page.
+function buildWhatsAppOrderUrl(whatsappNumber, product, selectedSize) {
   const cleanPhone = (whatsappNumber || "918511414656").replace(/[^0-9]/g, "");
-  const message = `Hello NARIVAE Team! 👋\n\nI want to place an order for:\n📌 *${productTitle}*\n📏 *Size:* ${selectedSize || "Standard"}\n💰 *Price:* ₹${(price || 0).toLocaleString("en-IN")}\n\nPlease confirm availability and payment details!`;
+  const productUrl = `https://narivae.com/product.html?id=${encodeURIComponent(product.id)}`;
+  const message = `Hello NARIVAE Team! 👋\n\nI want to place an order for:\n📌 *${product.title}*\n🧾 *SKU:* ${product.sku || product.id}\n📏 *Size:* ${selectedSize || "Standard"}\n💰 *Price:* ₹${(product.price || 0).toLocaleString("en-IN")}\n🔗 *Product:* ${productUrl}\n\nPlease confirm availability and payment details!`;
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-}
-
-// Convert an image URL or data URL into a small JPEG File for WhatsApp's native share sheet.
-async function makeOrderImageFile(source, name = "narivae-product.jpg") {
-  const response = await fetch(source);
-  if (!response.ok) throw new Error("Image could not be downloaded.");
-  const sourceBlob = await response.blob();
-  let bitmap;
-  try {
-    bitmap = await createImageBitmap(sourceBlob);
-  } catch (error) {
-    throw new Error("Image could not be opened for compression.");
-  }
-  const maxSide = 1280;
-  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-  canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-  const jpeg = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.78));
-  if (!jpeg) throw new Error("Image compression failed.");
-  return new File([jpeg], name, { type: "image/jpeg" });
-}
-
-async function shareWhatsAppOrder(whatsappNumber, message, imageSources) {
-  const cleanPhone = (whatsappNumber || "918511414656").replace(/[^0-9]/g, "");
-  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-  const uniqueSources = [...new Set((imageSources || []).filter(Boolean))];
-  const conversions = await Promise.allSettled(uniqueSources.map((src, index) =>
-    makeOrderImageFile(src, `narivae-product-${index + 1}.jpg`)
-  ));
-  const files = conversions.filter(result => result.status === "fulfilled").map(result => result.value);
-
-  if (files.length && navigator.canShare && navigator.canShare({ files }) && navigator.share) {
-    try {
-      await navigator.share({ title: "NARIVAE order", text: message, files });
-      return;
-    } catch (error) {
-      if (error.name === "AbortError") return;
-    }
-  }
-
-  // Browsers without file sharing still get a compressed image download and a ready WhatsApp order.
-  files.forEach(file => {
-    const url = URL.createObjectURL(file);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = file.name;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
-  });
-  if (uniqueSources.length && !files.length) {
-    alert("WhatsApp order text is ready. This browser could not package the product image; please attach the product photo manually if needed.");
-  } else if (files.length) {
-    alert(`${files.length} compressed product photo${files.length === 1 ? " has" : "s have"} been downloaded. Attach ${files.length === 1 ? "it" : "them"} in WhatsApp to send with your order.`);
-  }
-  window.location.href = whatsappUrl;
 }

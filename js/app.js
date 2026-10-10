@@ -379,13 +379,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (subtotalEl) subtotalEl.textContent = `₹${subtotal.toLocaleString('en-IN')}`;
 
     if (checkoutWaBtn) {
-      const summaryText = cart.map(i => `• ${i.title} (${i.size}) x${i.qty} = ₹${(i.price * i.qty).toLocaleString('en-IN')}`).join('\n');
+      const summaryText = cart.map(i => {
+        const productId = i.id || i.productId;
+        const productUrl = productId
+          ? `https://narivae.com/product.html?id=${encodeURIComponent(productId)}`
+          : "https://narivae.com";
+        return `• ${i.title} (${i.size}) x${i.qty} = ₹${(i.price * i.qty).toLocaleString('en-IN')}\n  Product: ${productUrl}`;
+      }).join('\n');
       const waMsg = `Hello NARIVAE! I would like to order the following items from my shopping bag:\n\n${summaryText}\n\n*Total Amount:* ₹${subtotal.toLocaleString('en-IN')}`;
       checkoutWaBtn.href = `https://wa.me/${store.branding.whatsappNumber}?text=${encodeURIComponent(waMsg)}`;
-      checkoutWaBtn.onclick = async (event) => {
-        event.preventDefault();
-        await shareWhatsAppOrder(store.branding.whatsappNumber, waMsg, cart.map(item => item.image));
-      };
     }
   }
 
