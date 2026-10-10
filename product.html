@@ -614,6 +614,12 @@
         document.getElementById('p-wa-order-btn').href = buildWhatsAppOrderUrl(store.branding.whatsappNumber, product.title, sz, product.price, product.mainImage);
       };
 
+      document.getElementById('p-wa-order-btn').addEventListener('click', async (event) => {
+        event.preventDefault();
+        const message = `Hello NARIVAE Team! 👋\n\nI want to place an order for:\n📌 *${product.title}*\n🧾 *SKU:* ${product.sku || product.id}\n📏 *Size:* ${selectedSize || "Standard"}\n💰 *Price:* ₹${product.price.toLocaleString("en-IN")}\n\nPlease confirm availability and payment details!`;
+        await shareWhatsAppOrder(store.branding.whatsappNumber, message, [product.mainImage]);
+      });
+
       // Dynamic Customer Feedback Section
       const reviewsContainer = document.getElementById("reviews-grid-container");
       if (reviewsContainer) {
