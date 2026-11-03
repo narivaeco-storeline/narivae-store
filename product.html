@@ -189,6 +189,33 @@
       border-radius: var(--radius-sm);
     }
 
+    #product-reviews-grid .product-review-card {
+      align-self: start;
+      background: var(--bg-card, #fff);
+      border: 1px solid rgba(87, 34, 48, 0.14);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(67, 31, 39, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .product-review-person { display:flex; align-items:center; gap:12px; }
+    .product-review-avatar {
+      width:46px; height:46px; border-radius:50%; display:grid; place-items:center;
+      flex:0 0 46px; background:var(--rose-pink); color:#fff; font-size:.84rem; font-weight:700;
+    }
+    .product-review-name { color:var(--primary-maroon); font-size:1rem; font-weight:700; }
+    .product-review-stars { color:var(--gold-accent); font-size:1.25rem; letter-spacing:2px; line-height:1; }
+    .product-review-comment { margin:0; color:#6f7077; font-size:.96rem; line-height:1.7; overflow-wrap:anywhere; }
+    .product-review-divider { border:0; border-top:1px solid rgba(87, 34, 48, .13); width:100%; margin:0; }
+    .product-review-footer { color:var(--primary-maroon); font-size:.82rem; font-weight:600; }
+    .product-review-photos { display:flex; flex-wrap:wrap; gap:12px; }
+    .product-review-photo {
+      width:132px; height:168px; object-fit:cover; border-radius:14px;
+      border:1px solid rgba(87, 34, 48, .12); background:var(--bg-warm);
+    }
+
     .view-all-pill-btn {
       display: block;
       margin: 30px auto 0 auto;
@@ -637,11 +664,19 @@
       if (productReviewsGrid) {
         productReviewsGrid.innerHTML = productReviews.length ? productReviews.map(r => {
           const photos = (r.images && r.images.length ? r.images : (r.imageUrl ? [r.imageUrl] : []));
-          return `<article class="review-card">
-            <div style="color:var(--gold-accent); font-size:1.1rem;" aria-label="${r.rating} out of 5 stars">${'★'.repeat(Math.max(0, Math.min(5, Number(r.rating) || 0)))}${'☆'.repeat(5 - Math.max(0, Math.min(5, Number(r.rating) || 0)))}</div>
-            <p style="font-size:0.88rem; color:#444; line-height:1.5;">${r.comment || ""}</p>
-            ${photos.length ? `<div style="display:flex; gap:8px; flex-wrap:wrap;">${photos.map(src => `<img src="${src}" alt="${r.name || "Customer"} product review photo" style="width:88px;height:110px;object-fit:cover;border-radius:8px;" loading="lazy" />`).join("")}</div>` : ""}
-            <div style="font-size:0.85rem; font-weight:700; color:#111;">${r.name || "Customer"}${r.status ? ` <span style="color:green;font-weight:500;">(${r.status})</span>` : ""}</div>
+          const reviewerName = (r.name || "Customer").trim();
+          const initials = reviewerName.split(/\s+/).slice(0, 2).map(part => part.charAt(0)).join("").toUpperCase();
+          const rating = Math.max(0, Math.min(5, Number(r.rating) || 0));
+          return `<article class="product-review-card">
+            <div class="product-review-person">
+              <span class="product-review-avatar" aria-hidden="true">${initials}</span>
+              <span class="product-review-name">${reviewerName}</span>
+            </div>
+            <div class="product-review-stars" aria-label="${rating} out of 5 stars">${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}</div>
+            <p class="product-review-comment">${r.comment || ""}</p>
+            <hr class="product-review-divider" />
+            <div class="product-review-footer">Customer review${photos.length ? ` · ${photos.length} customer photo${photos.length === 1 ? "" : "s"}` : ""}</div>
+            ${photos.length ? `<div class="product-review-photos">${photos.map(src => `<img src="${src}" alt="${reviewerName}’s product review photo" class="product-review-photo" loading="lazy" />`).join("")}</div>` : ""}
           </article>`;
         }).join("") : `<p style="color:#777; text-align:center; grid-column:1/-1;">Be the first to review this product.</p>`;
       }
