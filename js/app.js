@@ -203,6 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${p.originalPrice > p.price ? `<span class="original-price">₹${p.originalPrice.toLocaleString('en-IN')}</span>` : ''}
             ${p.discount ? `<span class="discount-tag">${p.discount}</span>` : ''}
           </div>
+          ${renderProductRating(p.id, store)}
           <div class="size-pill-row">
             ${(p.sizes || []).join('  ')}
           </div>
@@ -289,6 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${p.originalPrice > p.price ? `<span class="original-price">₹${p.originalPrice.toLocaleString('en-IN')}</span>` : ''}
             ${p.discount ? `<span class="discount-tag">${p.discount}</span>` : ''}
           </div>
+          ${renderProductRating(p.id, store)}
         </div>
       </div>
     `).join('');

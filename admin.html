@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NARIVAE Admin Panel | Complete Store Management Portal</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=5">
   <style>
     .admin-nav-item {
       display: flex;
@@ -123,6 +123,9 @@
         </div>
         <div class="admin-nav-item" data-tab="reviews">
           <span>⭐ Customer Reviews</span>
+        </div>
+        <div class="admin-nav-item" data-tab="product-reviews">
+          <span>🛍️ Product Reviews & Ratings</span>
         </div>
         <div class="admin-nav-item" data-tab="branding">
           <span>⚙️ All Site Headings & Bio</span>
@@ -286,6 +289,22 @@
             <tbody id="admin-reviews-tbody">
               <!-- Dynamically populated -->
             </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-product-reviews" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:16px; flex-wrap:wrap;">
+          <div>
+            <h2 style="font-family:var(--font-serif);">Product Reviews & Ratings</h2>
+            <p style="color:#666; margin-top:6px;">Add a rating, written review, and customer photos for a listed product. Product ratings are averaged automatically.</p>
+          </div>
+          <button class="btn-primary" id="add-product-review-btn">+ Add Product Review</button>
+        </div>
+        <div class="admin-card">
+          <table class="data-table">
+            <thead><tr><th>Product</th><th>Customer</th><th>Rating</th><th>Review</th><th>Photos</th><th>Actions</th></tr></thead>
+            <tbody id="admin-product-reviews-tbody"></tbody>
           </table>
         </div>
       </div>
@@ -675,7 +694,22 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=4"></script>
-  <script src="js/admin.js?v=4"></script>
+  <div class="modal-overlay" id="admin-product-review-modal">
+    <div class="product-modal-container" style="max-width:540px; padding:24px;">
+      <button class="modal-close-btn" id="admin-product-review-modal-close">&times;</button>
+      <h3 id="product-review-modal-title" style="font-family:var(--font-serif); color:var(--primary-maroon); margin-bottom:16px;">Add Product Review</h3>
+      <div class="form-group"><label>Product *</label><select class="form-control" id="product-review-product"></select></div>
+      <div class="grid-2col">
+        <div class="form-group"><label>Customer Name *</label><input class="form-control" id="product-review-name" /></div>
+        <div class="form-group"><label>Rating (1-5 stars) *</label><select class="form-control" id="product-review-rating"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></div>
+      </div>
+      <div class="form-group"><label>Review *</label><textarea class="form-control" id="product-review-comment" rows="3" placeholder="Write the customer's review"></textarea></div>
+      <div class="form-group"><label>Customer Product Photos</label><input type="file" id="product-review-photos" accept="image/*" multiple class="form-control" /><small style="color:#777;">Photos are compressed before saving. You can select more than one.</small><div id="product-review-photo-status" style="color:green;font-size:0.82rem;margin-top:5px;"></div></div>
+      <button class="btn-primary" id="save-product-review-btn" style="width:100%; justify-content:center;">Save Product Review</button>
+    </div>
+  </div>
+
+  <script src="js/data.js?v=5"></script>
+  <script src="js/admin.js?v=5"></script>
 </body>
 </html>

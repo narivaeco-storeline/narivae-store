@@ -133,6 +133,7 @@ const DEFAULT_STORE_DATA = {
       "imageUrl": "https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=600&q=80"
     }
   ],
+  "productReviews": [],
   "products": [
     {
       "id": "prod-1791108407703",
@@ -12588,6 +12589,7 @@ function getStoreData() {
         heroSlides: parsed.heroSlides || DEFAULT_STORE_DATA.heroSlides,
         promoBanner: { ...DEFAULT_STORE_DATA.promoBanner, ...(parsed.promoBanner || {}) },
         customerReviews: parsed.customerReviews || DEFAULT_STORE_DATA.customerReviews,
+        productReviews: Array.isArray(parsed.productReviews) ? parsed.productReviews : [],
         products: parsed.products || DEFAULT_STORE_DATA.products
       };
     }
@@ -12595,6 +12597,27 @@ function getStoreData() {
     console.warn("Failed to parse store data from localStorage", e);
   }
   return DEFAULT_STORE_DATA;
+}
+
+function getProductReviewStats(productId, storeData = getStoreData()) {
+  const reviews = (storeData.productReviews || []).filter(review =>
+    review.productId === productId && Number(review.rating) >= 1 && Number(review.rating) <= 5
+  );
+  const average = reviews.length
+    ? reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length
+    : 0;
+  return { count: reviews.length, average: Math.round(average * 10) / 10 };
+}
+
+function renderProductRating(productId, storeData = getStoreData()) {
+  const { count, average } = getProductReviewStats(productId, storeData);
+  if (!count) return "";
+  const fill = Math.max(0, Math.min(100, average / 5 * 100));
+  return `<div class="product-rating" aria-label="Rated ${average.toFixed(1)} out of 5 from ${count} reviews">
+    <span class="rating-value">(${average.toFixed(1)})</span>
+    <span class="rating-stars" aria-hidden="true"><span class="rating-stars-empty">★★★★★</span><span class="rating-stars-fill" style="width:${fill}%">★★★★★</span></span>
+    <span class="rating-count">(${count})</span>
+  </div>`;
 }
 
 function saveStoreData(data) {
