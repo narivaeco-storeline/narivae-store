@@ -215,6 +215,7 @@
       width:132px; height:168px; object-fit:cover; border-radius:14px;
       border:1px solid rgba(87, 34, 48, .12); background:var(--bg-warm);
     }
+    .product-review-swipe-hint { display:none; }
 
     .view-all-pill-btn {
       display: block;
@@ -255,6 +256,32 @@
       }
       .reviews-grid {
         grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 767px) {
+      #product-reviews-grid {
+        display:flex;
+        gap:14px;
+        overflow-x:auto;
+        overflow-y:hidden;
+        padding:4px 4px 14px;
+        scroll-snap-type:x mandatory;
+        scroll-padding-inline:4px;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:thin;
+        scrollbar-color:var(--gold-accent) transparent;
+      }
+      #product-reviews-grid .product-review-card {
+        flex:0 0 calc(100% - 28px);
+        scroll-snap-align:start;
+      }
+      #product-reviews-grid.has-multiple + .product-review-swipe-hint {
+        display:block;
+        margin:2px 0 0;
+        color:var(--primary-maroon);
+        font-size:.78rem;
+        text-align:center;
       }
     }
   </style>
@@ -316,7 +343,8 @@
         <h2 class="section-title">PRODUCT REVIEWS</h2>
         <div class="section-subtitle" id="product-review-summary">Customer ratings and photos</div>
       </div>
-      <div class="reviews-grid" id="product-reviews-grid"></div>
+      <div class="reviews-grid" id="product-reviews-grid" tabindex="0" aria-label="Product reviews"></div>
+      <p class="product-review-swipe-hint">Swipe to see more reviews <span aria-hidden="true">→</span></p>
     </div>
   </section>
 
@@ -662,6 +690,7 @@
           : "No customer reviews for this product yet.";
       }
       if (productReviewsGrid) {
+        productReviewsGrid.classList.toggle("has-multiple", productReviews.length > 1);
         productReviewsGrid.innerHTML = productReviews.length ? productReviews.map(r => {
           const photos = (r.images && r.images.length ? r.images : (r.imageUrl ? [r.imageUrl] : []));
           const reviewerName = (r.name || "Customer").trim();
