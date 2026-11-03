@@ -6,6 +6,13 @@
 document.addEventListener("DOMContentLoaded", () => {
   let store = getStoreData();
   const DEFAULT_PASSCODE = "nariaeadmin999123";
+  const PENDING_PRODUCT_DELETIONS_KEY = "narivae_pending_product_deletions_v1";
+  let pendingDeletedProductIds = new Set();
+  try {
+    pendingDeletedProductIds = new Set(JSON.parse(localStorage.getItem(PENDING_PRODUCT_DELETIONS_KEY) || "[]"));
+  } catch (error) {
+    localStorage.removeItem(PENDING_PRODUCT_DELETIONS_KEY);
+  }
 
   // Elements
   const loginOverlay = document.getElementById("admin-login-overlay");
@@ -536,6 +543,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.deleteProduct = function(id) {
     if (confirm("Are you sure you want to delete this product?")) {
+      pendingDeletedProductIds.add(id);
+      localStorage.setItem(PENDING_PRODUCT_DELETIONS_KEY, JSON.stringify([...pendingDeletedProductIds]));
       store.products = store.products.filter(p => p.id !== id);
       saveStoreData(store);
       renderProductsTable();
@@ -909,6 +918,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // ALWAYS read the freshest saved state from localStorage before pushing
       const latestStore = getStoreData();
+      if (!Array.isArray(latestStore.products) || latestStore.products.length === 0) {
+        alert("The store catalog is empty, so nothing was sent to GitHub. Reload the live Admin page and try again.");
+        return;
+      }
       if (!pat || !pat.startsWith("ghp_")) {
         alert("Please enter a valid GitHub Personal Access Token (starts with ghp_).");
         return;
@@ -922,19 +935,48 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         // --- 1. PUBLISH STORE DATA (data.js) ---
         statusMsg.textContent = "Step 1/2: Publishing store data (products, titles, branding)...";
-        const getResData = await fetch(`https://api.github.com/repos/${repo}/contents/js/data.js`, {
-          headers: { "Authorization": `token ${pat}`, "Accept": "application/vnd.github.v3+json" }
+        const dataFileUrl = `https://api.github.com/repos/${repo}/contents/js/data.js?ref=main`;
+        const getResData = await fetch(dataFileUrl, {
+          headers: { "Authorization": `token ${pat}`, "Accept": "application/vnd.github+json" }
         });
         const getJsonData = await getResData.json();
         if (!getResData.ok) throw new Error(getJsonData.message || "Failed to fetch data.js");
-        
-        let binaryStringData = atob(getJsonData.content);
-        let bytesData = new Uint8Array(binaryStringData.length);
-        for (let i = 0; i < binaryStringData.length; i++) bytesData[i] = binaryStringData.charCodeAt(i);
-        let currentTextData = new TextDecoder().decode(bytesData);
+        if (!getJsonData.sha || !getJsonData.size) throw new Error("GitHub did not return a valid catalog file. No data was changed.");
+
+        // The Contents API omits file content above 1 MB unless the raw media type is requested.
+        // data.js is larger than 1 MB, so never build a replacement from the JSON response body.
+        const rawResData = await fetch(dataFileUrl, {
+          cache: "no-store",
+          headers: { "Authorization": `token ${pat}`, "Accept": "application/vnd.github.raw+json" }
+        });
+        if (!rawResData.ok) throw new Error("Could not read the full published catalog from GitHub. No data was changed.");
+        const currentTextData = await rawResData.text();
+        const dataBlockPattern = /const DEFAULT_STORE_DATA = (\{[\s\S]*?\});\n\n\/\/ Storage helper functions/;
+        const currentBlockMatch = currentTextData.match(dataBlockPattern);
+        if (!currentBlockMatch) throw new Error("GitHub's catalog file is empty or damaged. No data was changed.");
+
+        let publishedStore;
+        try { publishedStore = JSON.parse(currentBlockMatch[1]); }
+        catch (error) { throw new Error("GitHub's catalog data is invalid. No data was changed."); }
+        if (!Array.isArray(publishedStore.products) || publishedStore.products.length === 0) {
+          throw new Error("GitHub's catalog contains no products. No data was changed.");
+        }
+        const latestProductIds = new Set(latestStore.products.map(product => product.id));
+        const unconfirmedMissingProducts = publishedStore.products.filter(product =>
+          !latestProductIds.has(product.id) && !pendingDeletedProductIds.has(product.id)
+        );
+        if (unconfirmedMissingProducts.length) {
+          throw new Error(`This browser copy is missing ${unconfirmedMissingProducts.length} product(s) that are still published. No data was changed. Reload Admin from the live site before publishing.`);
+        }
 
         const newJsonStr = JSON.stringify(latestStore, null, 2);
-        const newTextData = currentTextData.replace(/const DEFAULT_STORE_DATA = \{[\s\S]*?\};\n\n\/\/ Storage helper functions/, `const DEFAULT_STORE_DATA = ${newJsonStr};\n\n// Storage helper functions`);
+        const newTextData = currentTextData.replace(dataBlockPattern, `const DEFAULT_STORE_DATA = ${newJsonStr};\n\n// Storage helper functions`);
+        const newBlockMatch = newTextData.match(dataBlockPattern);
+        if (!newBlockMatch || newTextData === currentTextData) throw new Error("Could not safely prepare the catalog update. No data was changed.");
+        const preparedStore = JSON.parse(newBlockMatch[1]);
+        if (!Array.isArray(preparedStore.products) || preparedStore.products.length !== latestStore.products.length || !newTextData.includes("function getStoreData()")) {
+          throw new Error("The prepared catalog did not pass safety checks. No data was changed.");
+        }
         
         let utf8BytesData = new TextEncoder().encode(newTextData);
         let binaryStrData = "";
@@ -946,10 +988,16 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({
             message: "Publish updated store catalog and text from Admin",
             content: btoa(binaryStrData),
-            sha: getJsonData.sha
+            sha: getJsonData.sha,
+            branch: "main"
           })
         });
-        if (!putResData.ok) throw new Error("Failed to push data.js to GitHub.");
+        if (!putResData.ok) {
+          const putError = await putResData.json().catch(() => ({}));
+          throw new Error(putError.message || "Failed to push data.js to GitHub.");
+        }
+        localStorage.removeItem(PENDING_PRODUCT_DELETIONS_KEY);
+        pendingDeletedProductIds.clear();
 
         // --- 2. PUBLISH THEME COLORS (styles.css) ---
         statusMsg.textContent = "Step 2/2: Publishing theme colors (styles.css)...";
