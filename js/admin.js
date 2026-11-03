@@ -795,6 +795,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let editingProductReviewId = null;
   let productReviewImages = [];
 
+  function renderProductReviewPhotoPreview() {
+    const preview = document.getElementById("product-review-photo-preview");
+    if (!preview) return;
+    preview.innerHTML = productReviewImages.map((src, index) => `
+      <div style="width:132px;height:168px;border:1px solid #eadfe1;border-radius:14px;overflow:hidden;background:#f7f1f1;">
+        <img src="${src}" alt="Customer review photo ${index + 1}" style="width:100%;height:100%;object-fit:cover;" />
+      </div>
+    `).join("");
+  }
+
   function populateProductReviewProductOptions(selectedId) {
     if (!productReviewProduct) return;
     productReviewProduct.innerHTML = store.products.map(p => `<option value="${p.id}">${p.title}</option>`).join("");
@@ -806,6 +816,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!store.products.length) return alert("Add a product before creating a product review.");
     editingProductReviewId = null;
     productReviewImages = [];
+    renderProductReviewPhotoPreview();
     populateProductReviewProductOptions();
     document.getElementById("product-review-modal-title").textContent = "Add Product Review";
     setVal("product-review-name", "");
@@ -821,6 +832,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!review) return;
     editingProductReviewId = id;
     productReviewImages = review.images && review.images.length ? [...review.images] : (review.imageUrl ? [review.imageUrl] : []);
+    renderProductReviewPhotoPreview();
     populateProductReviewProductOptions(review.productId);
     document.getElementById("product-review-modal-title").textContent = "Edit Product Review";
     setVal("product-review-name", review.name);
@@ -842,8 +854,9 @@ document.addEventListener("DOMContentLoaded", () => {
       try { converted.push(await convertToWebP(file, 800, 0.8)); }
       catch (error) { console.error("Could not compress product review photo", error); }
     }
-    productReviewImages = converted;
-    if (status) status.textContent = `${converted.length} compressed photo(s) ready.`;
+    if (converted.length) productReviewImages = converted;
+    renderProductReviewPhotoPreview();
+    if (status) status.textContent = converted.length ? `${converted.length} compressed photo(s) ready.` : "Photo compression failed. Existing saved photos are unchanged.";
   };
 
   const saveProductReviewBtn = document.getElementById("save-product-review-btn");
