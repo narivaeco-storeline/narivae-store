@@ -101,10 +101,10 @@ const DEFAULT_STORE_DATA = {
     }
   ],
   "promoBanner": {
-    "title": "GRAB UP TO 60% OFF ON FESTIVE SUITS",
-    "subtitle": "Use Code FESTIVE10 for an additional 10% instant discount on WhatsApp!",
+    "title": "DISCOVER BEAUTIFUL ETHNIC SUITS FOR EVERY FESTIVE MOMENT",
+    "subtitle": "Elevate your ethnic wardrobe with Narivae’s beautiful dresses!",
     "imageUrl": "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1600&q=80",
-    "buttonText": "CLAIM DISCOUNT ON WHATSAPP",
+    "buttonText": "ORDER NOW ON WHATSAPP",
     "buttonLink": "https://wa.me/918511414656?text=Hi%20NARIVAE!%20I%20want%20to%20claim%20the%20FESTIVE10%20discount%20code!"
   },
   "customerReviews": [
