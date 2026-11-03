@@ -99,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderHeroSlidesAdmin();
     populatePromoBannerForm();
     renderReviewsAdminTable();
+    renderProductReviewsAdminTable();
     setupTabSwitchers();
   }
 
@@ -124,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTxt("stat-hot-products", store.products.filter(p => p.isHot).length);
     setTxt("stat-hero-slides", store.heroSlides.length);
     setTxt("stat-nav-count", store.navigation.length);
-    setTxt("stat-reviews-count", store.customerReviews.length);
+    setTxt("stat-reviews-count", store.customerReviews.length + (store.productReviews || []).length);
   }
 
   function setTxt(id, txt) {
@@ -759,6 +760,112 @@ document.addEventListener("DOMContentLoaded", () => {
       renderDashboardStats();
     }
   };
+
+  /* Product-linked reviews drive each product's average rating and storefront stars. */
+  function renderProductReviewsAdminTable() {
+    const tbody = document.getElementById("admin-product-reviews-tbody");
+    if (!tbody) return;
+    store.productReviews = Array.isArray(store.productReviews) ? store.productReviews : [];
+    tbody.innerHTML = store.productReviews.map(r => {
+      const product = store.products.find(p => p.id === r.productId);
+      const photos = r.images && r.images.length ? r.images : (r.imageUrl ? [r.imageUrl] : []);
+      return `<tr>
+        <td>${product ? product.title : "Product removed"}</td>
+        <td>${r.name || "Customer"}</td>
+        <td style="color:#d49b00;">${'★'.repeat(Math.max(0, Math.min(5, Number(r.rating) || 0)))}</td>
+        <td style="max-width:240px; font-size:0.82rem;">${r.comment || ""}</td>
+        <td>${photos.length ? `<img src="${photos[0]}" class="table-thumb" alt="Review photo" />${photos.length > 1 ? ` +${photos.length - 1}` : ""}` : "—"}</td>
+        <td><button class="btn-primary" style="padding:4px 10px;font-size:0.75rem;" onclick="editProductReview('${r.id}')">Edit</button>
+        <button style="padding:4px 10px;font-size:0.75rem;background:#d32f2f;color:#fff;border-radius:4px;margin-left:4px;" onclick="deleteProductReview('${r.id}')">Delete</button></td>
+      </tr>`;
+    }).join("") || `<tr><td colspan="6" style="text-align:center;color:#777;">No product reviews yet.</td></tr>`;
+  }
+
+  const productReviewModal = document.getElementById("admin-product-review-modal");
+  const productReviewProduct = document.getElementById("product-review-product");
+  let editingProductReviewId = null;
+  let productReviewImages = [];
+
+  function populateProductReviewProductOptions(selectedId) {
+    if (!productReviewProduct) return;
+    productReviewProduct.innerHTML = store.products.map(p => `<option value="${p.id}">${p.title}</option>`).join("");
+    if (selectedId) productReviewProduct.value = selectedId;
+  }
+
+  const addProductReviewBtn = document.getElementById("add-product-review-btn");
+  if (addProductReviewBtn) addProductReviewBtn.onclick = () => {
+    if (!store.products.length) return alert("Add a product before creating a product review.");
+    editingProductReviewId = null;
+    productReviewImages = [];
+    populateProductReviewProductOptions();
+    document.getElementById("product-review-modal-title").textContent = "Add Product Review";
+    setVal("product-review-name", "");
+    setVal("product-review-rating", "5");
+    setVal("product-review-comment", "");
+    document.getElementById("product-review-photo-status").textContent = "";
+    document.getElementById("product-review-photos").value = "";
+    productReviewModal.classList.add("active");
+  };
+
+  window.editProductReview = function(id) {
+    const review = store.productReviews.find(r => r.id === id);
+    if (!review) return;
+    editingProductReviewId = id;
+    productReviewImages = review.images && review.images.length ? [...review.images] : (review.imageUrl ? [review.imageUrl] : []);
+    populateProductReviewProductOptions(review.productId);
+    document.getElementById("product-review-modal-title").textContent = "Edit Product Review";
+    setVal("product-review-name", review.name);
+    setVal("product-review-rating", String(review.rating));
+    setVal("product-review-comment", review.comment);
+    document.getElementById("product-review-photo-status").textContent = productReviewImages.length ? `${productReviewImages.length} saved photo(s). Choose photos to replace them.` : "";
+    document.getElementById("product-review-photos").value = "";
+    productReviewModal.classList.add("active");
+  };
+
+  const productReviewPhotoInput = document.getElementById("product-review-photos");
+  if (productReviewPhotoInput) productReviewPhotoInput.onchange = async e => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const status = document.getElementById("product-review-photo-status");
+    if (status) status.textContent = `Compressing ${files.length} photo(s)…`;
+    const converted = [];
+    for (const file of files) {
+      try { converted.push(await convertToWebP(file, 800, 0.8)); }
+      catch (error) { console.error("Could not compress product review photo", error); }
+    }
+    productReviewImages = converted;
+    if (status) status.textContent = `${converted.length} compressed photo(s) ready.`;
+  };
+
+  const saveProductReviewBtn = document.getElementById("save-product-review-btn");
+  if (saveProductReviewBtn) saveProductReviewBtn.onclick = () => {
+    const productId = productReviewProduct.value;
+    const name = getVal("product-review-name");
+    const rating = Number(getVal("product-review-rating"));
+    const comment = getVal("product-review-comment");
+    if (!productId || !name || !comment || rating < 1 || rating > 5) {
+      return alert("Choose a product and enter the customer name, rating, and review.");
+    }
+    const review = { id: editingProductReviewId || `product-review-${Date.now()}`, productId, name, rating, comment, images: productReviewImages };
+    const existingIndex = store.productReviews.findIndex(r => r.id === editingProductReviewId);
+    if (existingIndex >= 0) store.productReviews[existingIndex] = review;
+    else store.productReviews.push(review);
+    saveStoreData(store);
+    renderProductReviewsAdminTable();
+    renderDashboardStats();
+    productReviewModal.classList.remove("active");
+  };
+
+  window.deleteProductReview = function(id) {
+    if (!confirm("Delete this product review and its photos?")) return;
+    store.productReviews = store.productReviews.filter(r => r.id !== id);
+    saveStoreData(store);
+    renderProductReviewsAdminTable();
+    renderDashboardStats();
+  };
+
+  const closeProductReviewModal = document.getElementById("admin-product-review-modal-close");
+  if (closeProductReviewModal) closeProductReviewModal.onclick = () => productReviewModal.classList.remove("active");
 
   const reviewModalClose = document.getElementById("admin-review-modal-close");
   if (reviewModalClose) reviewModalClose.onclick = () => reviewModal.classList.remove("active");
